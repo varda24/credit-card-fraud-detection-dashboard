@@ -49,6 +49,14 @@ Credit card fraud is rare but highly impactful. The dataset is extremely imbalan
 
 ---
 
+## 🌐 Live Demo
+
+🔗 https://credit-card-fraud-detection-dashboard.streamlit.app/
+
+> ⚠️ Note: Due to dataset size constraints, the app requires user-uploaded data to run predictions.  
+> You can use the dataset from Kaggle:
+> https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud
+
 ## 📸 Dashboard Preview
 
 ### 🔹 Overview
@@ -116,6 +124,10 @@ Credit-Card-Fraud-Detection/
 ├── requirements.txt
 └── README.md
 ```
+
+## 📂 Dataset
+Download dataset from Kaggle:
+https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud
 
 ---
 
