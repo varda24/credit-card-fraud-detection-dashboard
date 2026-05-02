@@ -7,27 +7,6 @@ import plotly.graph_objects as go
 # ---------------- CONFIG ----------------
 st.set_page_config(page_title="Fraud Dashboard", layout="wide")
 
-# ---------------- LOAD MODEL ----------------
-@st.cache_resource
-def train_model(df):
-    from sklearn.ensemble import RandomForestClassifier
-    from sklearn.preprocessing import StandardScaler
-    from imblearn.over_sampling import SMOTE
-
-    X = df.drop("Class", axis=1)
-    y = df["Class"]
-
-    scaler = StandardScaler()
-    X = scaler.fit_transform(X)
-
-    sm = SMOTE(random_state=42)
-    X, y = sm.fit_resample(X, y)
-
-    model = RandomForestClassifier(n_estimators=20, max_depth=10)
-    model.fit(X, y)
-
-    return model
-
 # ---------------- HEADER ----------------
 st.markdown("""
 <h1 style='text-align:center; color:#38bdf8;'>💳 Fraud Detection Dashboard</h1>
@@ -37,7 +16,6 @@ st.markdown("""
 # ---------------- SIDEBAR ----------------
 st.sidebar.header("⚙️ Controls")
 
-threshold = st.sidebar.slider("Fraud Threshold", 0.1, 0.9, 0.5)
 filter_option = st.sidebar.selectbox("Filter", ["All", "Fraud Only", "Safe Only"])
 
 # ---------------- FILE ----------------
@@ -46,16 +24,27 @@ uploaded_file = st.file_uploader("Upload CSV", type=["csv"])
 if uploaded_file:
 
     df = pd.read_csv(uploaded_file)
-    model = train_model(df)
 
-    # ---------------- PREP ----------------
-    if "Class" in df.columns:
-        X = df.drop("Class", axis=1)
-    else:
-        X = df.copy()
+    from sklearn.ensemble import RandomForestClassifier
+    from sklearn.preprocessing import StandardScaler
+    from imblearn.over_sampling import SMOTE
 
-    probs = model.predict_proba(X)[:, 1]
-    preds = (probs > threshold).astype(int)
+    X = df.drop("Class", axis=1)
+    y = df["Class"]
+
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+
+    sm = SMOTE(random_state=42)
+    X_resampled, y_resampled = sm.fit_resample(X_scaled, y)
+
+    model = RandomForestClassifier(n_estimators=20, max_depth=10)
+    model.fit(X_resampled, y_resampled)
+
+    st.success("Model trained successfully!")
+
+    probs = model.predict_proba(X_scaled)[:, 1]
+    preds = (probs > 0.5).astype(int)
 
     df["Fraud_Probability"] = probs
     df["Prediction"] = preds
