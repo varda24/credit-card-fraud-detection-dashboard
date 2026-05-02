@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import joblib
-import os
 import plotly.express as px
 import plotly.graph_objects as go
 
@@ -10,18 +9,7 @@ import plotly.graph_objects as go
 st.set_page_config(page_title="Fraud Dashboard", layout="wide")
 
 # ---------------- LOAD MODEL ----------------
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-model_path = os.path.join(BASE_DIR, "models", "model.pkl")
-
-# Debug (will show in logs)
-print("Trying to load model from:", model_path)
-
-if not os.path.exists(model_path):
-    st.error("Model file not found. Check deployment.")
-    st.stop()
-
-model = joblib.load(model_path)
+model = joblib.load("model.pkl")
 
 # ---------------- HEADER ----------------
 st.markdown("""
