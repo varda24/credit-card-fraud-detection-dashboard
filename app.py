@@ -3,17 +3,16 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import StandardScaler
-from imblearn.over_sampling import SMOTE
 
 # ---------------- CONFIG ----------------
 st.set_page_config(page_title="Fraud Dashboard", layout="wide")
 
 # ---------------- LOAD MODEL ----------------
 @st.cache_resource
-def train_model():
-    df = pd.read_csv("data/creditcard.csv")
+def train_model(df):
+    from sklearn.ensemble import RandomForestClassifier
+    from sklearn.preprocessing import StandardScaler
+    from imblearn.over_sampling import SMOTE
 
     X = df.drop("Class", axis=1)
     y = df["Class"]
@@ -29,9 +28,6 @@ def train_model():
 
     return model
 
-
-model = train_model()
-
 # ---------------- HEADER ----------------
 st.markdown("""
 <h1 style='text-align:center; color:#38bdf8;'>💳 Fraud Detection Dashboard</h1>
@@ -45,11 +41,12 @@ threshold = st.sidebar.slider("Fraud Threshold", 0.1, 0.9, 0.5)
 filter_option = st.sidebar.selectbox("Filter", ["All", "Fraud Only", "Safe Only"])
 
 # ---------------- FILE ----------------
-file = st.file_uploader("Upload CSV", type=["csv"])
+uploaded_file = st.file_uploader("Upload CSV", type=["csv"])
 
-if file:
+if uploaded_file:
 
-    df = pd.read_csv(file)
+    df = pd.read_csv(uploaded_file)
+    model = train_model(df)
 
     # ---------------- PREP ----------------
     if "Class" in df.columns:
