@@ -1,15 +1,36 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import joblib
 import plotly.express as px
 import plotly.graph_objects as go
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import StandardScaler
+from imblearn.over_sampling import SMOTE
 
 # ---------------- CONFIG ----------------
 st.set_page_config(page_title="Fraud Dashboard", layout="wide")
 
 # ---------------- LOAD MODEL ----------------
-model = joblib.load("model.pkl")
+@st.cache_resource
+def train_model():
+    df = pd.read_csv("data/creditcard.csv")
+
+    X = df.drop("Class", axis=1)
+    y = df["Class"]
+
+    scaler = StandardScaler()
+    X = scaler.fit_transform(X)
+
+    sm = SMOTE(random_state=42)
+    X, y = sm.fit_resample(X, y)
+
+    model = RandomForestClassifier(n_estimators=20, max_depth=10)
+    model.fit(X, y)
+
+    return model
+
+
+model = train_model()
 
 # ---------------- HEADER ----------------
 st.markdown("""
