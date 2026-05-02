@@ -10,8 +10,12 @@ import plotly.graph_objects as go
 st.set_page_config(page_title="Fraud Dashboard", layout="wide")
 
 # ---------------- LOAD MODEL ----------------
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-model = joblib.load(os.path.join(BASE_DIR, "models", "model.pkl"))
+try:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    model_path = os.path.join(BASE_DIR, "models", "model.pkl")
+    model = joblib.load(model_path)
+except:
+    model = joblib.load("models/model.pkl")
 
 # ---------------- HEADER ----------------
 st.markdown("""
